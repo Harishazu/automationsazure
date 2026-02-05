@@ -1,0 +1,25 @@
+trigger: none
+
+schedules:
+  - cron: "30 3 * * 1-5"
+    displayName: 'Daily 9 AM Schedule'
+    branches:
+      include:
+        - develop
+    always: true
+
+jobs:
+  - job: ScaleUP
+    displayName: ScaleUP of postgresql servers
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'acrServiceConnectionLowerSubscription'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+              az postgres flexible-server update --sku-name Standard_D8ds_v5 --resource-group "to-devnew" --name "mo-dev-flexiserver-postgresql" --yes
+              
+
